@@ -21,8 +21,17 @@
 \usepackage{listings} % For source code listings (snippets)
 \usepackage{svg} % For SVG graphics
 \usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{arydshln} % for dashed line in matrix
 \usepackage{tikz}
 \usetikzlibrary{patterns}
+
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
 
 
 
@@ -71,8 +80,9 @@
 	Kacper Jastrzębski\\
 	260607@student.pwr.edu.pl
 }
-\date{Date: Tuesday 11:15, 21-3-2023}
+\date{Date: Tuesday 11:15, 21-03-2023}
 
+\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
 
 
 \begin{document}
@@ -198,7 +208,7 @@
 
 	\section{Denavit-Hartenberg (1955) solution}
 
-	Jacques Denavit and Richard Hartenberg introduced this convention in 1955 in order to standardize the coordinate frames for spatial linkages. They came up with an universal algorithm for describing the motion (or in other words: attaching a reference frames to the links) of a manipulator.
+	Jacques Denavit and Richard Hartenberg introduced this convention in 1955 in order to standardize the coordinate frames for spatial linkages\footnote{Description borrowed from Wikipedia: \href{https://en.wikipedia.org/wiki/Denavit\%E2\%80\%93Hartenberg_parameters}{Denavit–Hartenberg parameters}.}. They came up with an universal algorithm for describing the motion (or in other words: attaching a reference frames to the links) of a manipulator.
 
 	\subsection{Preliminary assumptions}
 	\begin{enumerate}
@@ -216,7 +226,7 @@
 		\item Step: determine $O_i$ (the origin of next frame), consider 3 cases:
 		\begin{enumerate}
 			\item case: $O_i = z_{i-1}  \bigcap z_i$
-			\item case: a point where normal line passing through $O_{i0-1}$ crosses $Z_i$
+			\item case parallel: a point where normal line passing through $O_{i0-1}$ crosses $Z_i$
 			\item case: a point where normal line to both $Z_{i-1}$ and $Z_i$ crosses $Z_i$
 		\end{enumerate}
 		\item Step: determine $x_i$ axis, for each case:
@@ -234,29 +244,77 @@
 		\end{enumerate}
 		\item Step: determine D-H parameters described in table below:
 
-			\begin{minipage}{\textwidth}
+		\begin{minipage}{\textwidth}
+			\begin{table}[H]
+				\centering
+				\resizebox{8cm}{!}{
 				\begin{tabular}{|c|c|c|c|c|}
 					\hline
 					& $\theta_i$ & $d_i$ & $a_i$ & $\alpha_i$\\
 					\hline
-					1 &  & & & \\
+					1 & $\theta_1$ & $d_1$ & $a_1$ & $\alpha_1$ \\
 					\hline
-					2 &  & & & \\
+					2 & $\theta_2$ & $d_2$ & $a_2$ & $\alpha_2$ \\
+					\vdots & & & & \\
+					n & $\theta_n$ & $d_n$ & $a_n$ & $\alpha_n$ \\
 					\hline
-					n &  & & & \\
-					\hline
-				\end{tabular}
-				This is the procedure that is using th D-H parameters
-				\begin{align}\label{key}
-					Rot(z,\;\theta_i)  \rightarrow Tran(z,\; d_i) \rightarrow Tran(x,\; a_i) \rightarrow Rot(x, \alpha_i)
-				\end{align}
-			\end{minipage}
+				\end{tabular}}
+			\end{table}
+
+			This is the procedure that is using th D-H parameters
+			\begin{align}\label{key}
+				A^i_{i-1}(q_i) = Rot(z,\;\theta_i) \; Tran(z,\; d_i)\;  Tran(x,\; a_i)\; Rot(x, \alpha_i)
+			\end{align}
+		\end{minipage}
+		\item Describe full kinematic:
+		\begin{equation}\label{key}
+			A^n_{0}(q) = A^1_{0}(q1)\cdot A^2_{1}(q2) \cdots  A^n_{n-1}(q_n)
+		\end{equation}
 
 
 	\end{enumerate}
 	note-1 with pictures
 
+	\section{Planar double pendulum}
 
+	Simple but not trivial example of a system:
+
+	notes-2
+	\begin{table}[H]
+		\centering
+		\resizebox{8cm}{!}{
+		\begin{tabular}{|l|c|c|c|c|}
+			\hline
+			& $\theta_i$ & $d_i$ & $a_i$ & $\alpha_i$\\
+			\hline\hline
+			1 & $q_1$ & $0$ & $ a_1$ & $0$ \\
+			\hline
+			2 & $q_2$ & $0$ & $a_2$ & $0$ \\
+			\hline
+		\end{tabular}}
+	\end{table}
+
+	\begin{align}\label{key}
+		q &= \begin{bmatrix}
+			q1 \\
+			q2
+		\end{bmatrix}\\
+		A^2_0(q) &= A^1_{0}(q_1) \cdot A^2_{1}(q_2) \\
+		Rot(z,q_1) \cdot Tran(x, a_1) &=
+		\left[
+		\renewcommand\arraystretch{2}
+		\begin{array}{c;{2pt/2pt}c}
+			\renewcommand\arraystretch{1}
+			\begin{matrix}
+				c_1 & -s_1 & 0 \\
+				s_1 & c_1 & 0 \\
+				0 & 0 & 1
+			\end{matrix} & \text{\LARGE 0} \\
+		\hdashline[2pt/2pt]
+			\text{\LARGE 0} & \text{\LARGE 1}
+		\end{array}
+		\right]=
+	\end{align}
 
 
 
