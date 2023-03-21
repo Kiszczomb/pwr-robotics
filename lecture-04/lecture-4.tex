@@ -1,0 +1,263 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+
+\title{
+	Introduction to Robotics \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Lecture 4}
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 11:15, 21-3-2023}
+
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{Forward kinematics}
+
+	Let's recapitulate the naming conventions for a exemplary manipulator:
+
+	% Note. This illustration was originally made with PSTricks. Conversion to
+	% PGF/TikZ was straightforward. However, I could probably have made it more
+	% elegant.
+
+	% Define a variable as a length
+	% Input:
+	%   #1 Variable name
+	%   #2 Value
+	%
+	% Example:
+	%   \nvar{\varx}{2cm}
+	\newcommand{\nvar}[2]{%
+		\newlength{#1}
+		\setlength{#1}{#2}
+	}
+
+	% Define a few constants for drawing
+	\nvar{\dg}{0.3cm}
+	\def\dw{0.25}\def\dh{0.5}
+	\nvar{\ddx}{1.5cm}
+
+	% Define commands for links, joints and such
+	\def\link{\draw [double distance=1.5mm, very thick] (0,0)--}
+	\def\joint{%
+		\filldraw [fill=white] (0,0) circle (5pt);
+		\fill[black] circle (2pt);
+	}
+	\def\grip{%
+		\draw[ultra thick](0cm,\dg)--(0cm,-\dg);
+		\fill (0cm, 0.5\dg)+(0cm,1.5pt) -- +(0.6\dg,0cm) -- +(0pt,-1.5pt);
+		\fill (0cm, -0.5\dg)+(0cm,1.5pt) -- +(0.6\dg,0cm) -- +(0pt,-1.5pt);
+	}
+	\def\robotbase{%
+		\draw[rounded corners=8pt] (-\dw,-\dh)-- (-\dw, 0) --
+		(0,\dh)--(\dw,0)--(\dw,-\dh);
+		\draw (-0.5,-\dh)-- (0.5,-\dh);
+		\fill[pattern=north east lines] (-0.5,-1) rectangle (0.5,-\dh);
+	}
+
+	% Draw an angle annotation
+	% Input:
+	%   #1 Angle
+	%   #2 Label
+	% Example:
+	%   \angann{30}{$\theta_1$}
+	\newcommand{\angann}[2]{%
+		\begin{scope}[red]
+			\draw [dashed, red] (0,0) -- (1.2\ddx,0pt);
+			\draw [->, shorten >=3.5pt] (\ddx,0pt) arc (0:#1:\ddx);
+			% Unfortunately automatic node placement on an arc is not supported yet.
+			% We therefore have to compute an appropriate coordinate ourselves.
+			\node at (#1/2-2:\ddx+8pt) {#2};
+		\end{scope}
+	}
+
+	% Draw line annotation
+	% Input:
+	%   #1 Line offset (optional)
+	%   #2 Line angle
+	%   #3 Line length
+	%   #5 Line label
+	% Example:
+	%   \lineann[1]{30}{2}{$L_1$}
+	\newcommand{\lineann}[4][0.5]{%
+		\begin{scope}[rotate=#2, blue,inner sep=2pt]
+			\draw[dashed, blue!40] (0,0) -- +(0,#1)
+			node [coordinate, near end] (a) {};
+			\draw[dashed, blue!40] (#3,0) -- +(0,#1)
+			node [coordinate, near end] (b) {};
+			\draw[|<->|] (a) -- node[fill=white] {#4} (b);
+		\end{scope}
+	}
+
+	% Define the kinematic parameters of the three link manipulator.
+	\def\thetaone{30}
+	\def\Lone{2}
+	\def\thetatwo{30}
+	\def\Ltwo{2}
+	\def\thetathree{30}
+	\def\Lthree{1}
+
+	\begin{center}
+		\begin{tikzpicture}
+			\robotbase
+			\angann{\thetaone}{$\theta_1$}
+			\lineann[0.7]{\thetaone}{\Lone}{$L_1$}
+			\link(\thetaone:\Lone);
+			\joint
+			\begin{scope}[shift=(\thetaone:\Lone), rotate=\thetaone]
+				\angann{\thetatwo}{$\theta_2$}
+				\lineann[-1.5]{\thetatwo}{\Ltwo}{$L_2$}
+				\link(\thetatwo:\Ltwo);
+				\joint
+				\begin{scope}[shift=(\thetatwo:\Ltwo), rotate=\thetatwo]
+					\angann{\thetathree}{$\theta_3$}
+					\lineann[0.7]{\thetathree}{\Lthree}{$L_3$}
+					\draw [dashed, red,rotate=\thetathree] (0,0) -- (1.2\ddx,0pt);
+					\link(\thetathree:\Lthree);
+					\joint
+					\begin{scope}[shift=(\thetathree:\Lthree), rotate=\thetathree]
+						\grip
+					\end{scope}
+				\end{scope}
+			\end{scope}
+		\end{tikzpicture}
+	\end{center}
+
+
+	\section{Denavit-Hartenberg (1955) solution}
+
+	Jacques Denavit and Richard Hartenberg introduced this convention in 1955 in order to standardize the coordinate frames for spatial linkages. They came up with an universal algorithm for describing the motion (or in other words: attaching a reference frames to the links) of a manipulator.
+
+	\subsection{Preliminary assumptions}
+	\begin{enumerate}
+		\setlength\itemsep{-0.3em}
+		\item motion allowed only along z-axis
+		\item rigid body assumed
+	\end{enumerate}
+	\noindent
+	\subsection{Algorithm:}
+	\begin{enumerate}
+		\setlength\itemsep{-0.3em}
+		\item Step: assign axes of rotation $z_0 \dots z_{n-1}$
+		\item Step: describe base frame $O_0 x_0 y_0 z_0$\footnote{Axis should be chosen wisely, in respect to the surroundings, context, and the use case.}
+		\item Step: create a loop $i=1, \dots, n-1$ (repeat steps 4-6)
+		\item Step: determine $O_i$ (the origin of next frame), consider 3 cases:
+		\begin{enumerate}
+			\item case: $O_i = z_{i-1}  \bigcap z_i$
+			\item case: a point where normal line passing through $O_{i0-1}$ crosses $Z_i$
+			\item case: a point where normal line to both $Z_{i-1}$ and $Z_i$ crosses $Z_i$
+		\end{enumerate}
+		\item Step: determine $x_i$ axis, for each case:
+		\begin{enumerate}
+			\item $x_i = z_{i-1} \times Z_i$
+			\item b and c: $x_i$ along normal line selected previously
+		\end{enumerate}
+		\item Step: calculate missing axis $y_i$ such the $x_i y_i z_i$ is a right-handed frame
+		\item Step: end-effector frame:
+		\begin{enumerate}
+			\item origin $O_n$ -- between fingers of a grabbing, two fingered effector
+			\item $z_n \; || \; z_{n-1}$ -- inherited from the last joint
+			\item $y_n$ -- finger motion direction
+			\item $x_n \rightarrow x_n y_n z_n \rightarrow $ right-handed
+		\end{enumerate}
+		\item Step: determine D-H parameters described in table below:
+
+			\begin{minipage}{\textwidth}
+				\begin{tabular}{|c|c|c|c|c|}
+					\hline
+					& $\theta_i$ & $d_i$ & $a_i$ & $\alpha_i$\\
+					\hline
+					1 &  & & & \\
+					\hline
+					2 &  & & & \\
+					\hline
+					n &  & & & \\
+					\hline
+				\end{tabular}
+				This is the procedure that is using th D-H parameters
+				\begin{align}\label{key}
+					Rot(z,\;\theta_i)  \rightarrow Tran(z,\; d_i) \rightarrow Tran(x,\; a_i) \rightarrow Rot(x, \alpha_i)
+				\end{align}
+			\end{minipage}
+
+
+	\end{enumerate}
+	note-1 with pictures
+
+
+
+
+
+ \end{document}

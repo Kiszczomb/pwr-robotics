@@ -1,0 +1,222 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+
+\newcommand{\experiment}{E105}
+
+
+\title{
+	Report no. 12 \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Exercise \experiment} \\
+	X-ray spectroscopy.
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 15:15, 14.06.2022}
+
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\textbf{Issues raised in the exercise:}
+	\begin{itemize}
+		\setlength\itemsep{-0.2em}
+		\item continuous bremsspectrum (bremsstrahlung) and characteristic X-radiation,
+		\item energy levels in atom,
+		\item crystal lattice constant,
+		\item Bragg’s law.
+	\end{itemize}
+	\vspace{1cm}
+
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{Preparation of experiments}
+
+
+	\subsection{List of equipment:}
+
+
+	\begin{enumerate}
+		\setlength\itemsep{-0.5em}
+		\item An X-ray unit equipped with X-ray tube with a tungsten anode,
+		\item X-ray goniometer with lithium fluoride crystal,
+		\item A Geiger-Müller counter tube,
+		\item Computer.
+	\end{enumerate}
+
+
+
+	\subsection{Experimental setup:}
+
+
+	%	\begin{figure}[h]
+		%		\centering
+		%		\includegraphics[width=12cm,trim={0cm 0 0 0cm},clip]{setup-schematic.png}
+		%		\caption{\centering The electrical circuit used to measure the current-voltage characteristic for forward-biased diodes.}%
+		%		\label{fig:setup-schematic}%
+		%	\end{figure}
+
+	%	\begin{figure}[h]
+		%		\centering
+		%
+		%		\subfloat[
+		%			\centering
+		%			Schematic of the RC circuit.
+		%			]{{
+				%				\includegraphics[width=7cm]{rc-circuit.png}
+				%			}}
+		%		\subfloat[
+		%			\centering
+		%			Photo of a measurement setup.
+		%			]{{
+				%				\includegraphics[width=9cm]{setup-photo.png}
+				%			}}
+		%		\caption{Experimental setup}
+		%		\label{fig:1}%
+		%	\end{figure}
+
+	\section{Course of experiments}
+
+	Experiment was conducted step by step according to \textbf{\experiment} instructions.
+
+	\section{Data analysis}
+	\begin{small}
+		\indent \textbf{Data}: Tables with data obtained during experiment and results of various calculations are available at the end of report. Values presented throughout this report that are preceded by $ \approx $ symbol had been approximated, i.e. main values -- cut to the \nth{2} digit after decimal point, uncertainties -- rounded up to the same number of digits after decimal point.
+
+		\textbf{Software}: Linear regression, correlation coefficients, standard deviation and all other calculations were made using appropriate tools provided in LibreOffice Calc software.
+
+		\textbf{Uncertainties}: Sources of uncertainties and their indications in this report:
+		\begin{itemize}
+			\setlength\itemsep{-0.2em}
+			\item $ \Delta_p(X) $ or $ acc(X) $ -- Absolute error of measurement, based on instrument accuracy (appropriate formulas used for different ranges, e.g. $ \Delta_p(X) = 0,5\% \cdot rdg \pm 3 \cdot dgt $ ).
+			\item $ u_a(X) $ -- Uncertainties of type A, related to statistical distribution (standard deviation).
+			\item $ u_b(X) $ -- Uncertainties of type B, related to instrument accuracy, absolute error, and calculated with: $ u_b(X) = \frac{\Delta_p(X)}{\sqrt{3}} $.
+			\item $ u_l(X) $ -- Uncertainties of a slope of linear regression model.
+			\item $ u_c(X) $ -- Combined uncertainties, composed of at least 2 base uncertainties, obtained by propagating uncertainties using formula:
+			\begin{equation}\label{key}
+				u_c(X) = \sqrt{\sum_{j = 1}^{k}\left(\dfrac{\partial f(X_j)}{\partial X_j}\right)^2 \cdot u^2(X_j)}
+			\end{equation}
+		\end{itemize}
+	\end{small}
+
+
+
+	\subsection{Determination of the characteristic energy values of tungsten}
+
+
+
+
+	To calculate energies of selected transitions (maxima in figure \ref{graph:1}) following formula was used:
+
+	\begin{equation}\label{key}
+		E = \dfrac{mhc}{2 d sin(\vartheta)}
+	\end{equation}
+
+	Where:
+	\begin{itemize}
+		\setlength\itemsep{-0.2em}
+		\item \textbf{m} -- diffraction order of a corresponding transition (read from table provided in the assignment),
+		\item \textbf{h} -- Planck's constant ($ h = 4,1357 \cdot 10^{-15} \; [eVs] $),
+		\item \textbf{c} -- speed of light ($ c = 299792458 \; [\frac{m}{s}] $)
+		\item \textbf{d} -- interplanar spacing (lattice constant) of LiF crystal ($ d = 2,014 \cdot 10^{-10} \; [m] $).
+		\item \textbf{$ \vartheta $} -- angle at which the X-rays fall on the crystal.
+	\end{itemize}
+
+	\pagebreak
+	To determine the uncertainty of angle $ \vartheta $ first: the base line of background noise had been approximated using linear regression for few points between the spikes (green points named \textit{Background noise} in figure \ref{graph:1}). Later, the relative height of a spike was calculated (dotted vertical line) and values of angle (to the left and right of the peak) for half its height were determined using linear regressions for the left and right slope of a spike\footnote{For linear regression of slopes of spikes 3 point were used: peak point, first point to the left (or right) and second point to the left (or right). Those are the points that estimate the slopes the most accurately \tiny (in my opinion).}.\\
+
+	To calculate the uncertainty of energy $ E $ following formula was used:
+	\begin{equation}\label{key}
+		u_c(e) = \sqrt{\left( \dfrac{\partial}{\partial \vartheta} \left( E \right) \right)^2}= \sqrt{\left( \dfrac{m \cdot h \cdot c \cdot \cos(\vartheta) \cdot u(\vartheta)}{2d \cdot \sin^2(\vartheta)}\right)^2}
+	\end{equation}
+	Acquired value was then compared to the data provided in the assignment.\\
+
+
+	\subsection{Determination of the lattice constant of LiF crystal}
+	and*\familydefault{\rmdefault}
+
+	To determine the lattice constant of a crystal 5 maxima were chosen (figure \ref{graph:2}); then, their corresponding angles and energies of transitions were read from provided table. Next, to calculate lattice constant $ d $ following formula was used:
+
+	\begin{equation}\label{key}
+		E = \dfrac{mhc}{2 E \sin(\vartheta)}
+	\end{equation}
+
+	The uncertainty of angle was calculated in similar matter as before and the uncertainty of lattice constant using following formula:
+	\begin{equation}\label{key}
+		u_c(e) = \sqrt{\left( \dfrac{\partial}{\partial \vartheta} \left( d \right) \right)^2}= \sqrt{\left( \dfrac{m \cdot h \cdot c \cdot \cos(\vartheta) \cdot u(\vartheta)}{2 E \cdot \sin^2(\vartheta)}\right)^2}
+	\end{equation}
+
+	Results:
+
+	\section{Conclusions}
+
+	All values of energies of transitions and the value of lattice constant determined in the analysis lie within the calculated uncertainties. As we can see, the method of calculating the uncertainty of transition energy was not the most accurate, because the uncertainties are way bigger than necessary when compared with real values from the table provided in the assignment. Nonetheless, this report shows that provided instructions indeed work. \\
+	\vspace{2cm}\\
+
+	\textit{Post Scriptum:}\\
+	\\
+	I'm sorry for late submission. Though it's my last report in this course, I'd like to thank You for this semester, I enjoyed the lessons and even writing these reports (maybe except for calculating enormously long formulas; but I also learned \LaTeX,  so that's cool) and I'd like to wish You a pleasant holiday.
+
+
+\end{document}

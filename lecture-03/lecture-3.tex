@@ -1,0 +1,138 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{amsfonts} % provides \mathbb{text}
+\usepackage{arydshln} % for dashed line in matrix/array
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.misc}
+
+\usepackage{marvosym} % for communcation suymbols \fax \FAX \Faxmachine \Telefon \Letter
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+% custom environment for equation conditions
+\newenvironment{conditions}
+	{\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}-{}$} l}}
+	{\end{tabular}\par\vspace{\belowdisplayskip}}
+
+% set the minipage footnotes to arabic numbers
+\renewcommand{\thempfootnote}{\alph{mpfootnote}}
+
+% =========================================================================
+
+\title{
+	Electronic Circuits \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Project}
+}
+\author{
+	Michał Sutowicz\\
+	Kacper Jastrzębski\\
+}
+\date{Date: 20-03-2023}
+
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{Introduction}
+
+	Assigned values:
+
+	\begin{center}
+		\begin{tabular}{|c|c|c|c|c|c|}
+			\hline
+			$U_{outmax}\;[V]$ & $f_L\;[Hz]$ & $f_H\;[kHz]$ & $R_L\;[k\ohm]$ & $R_g\;[k\ohm]$ & $k_{uef}$\\
+			\hline
+			3 & 20 & 100 & 2 & 10 & 40  \\
+			\hline
+		\end{tabular}
+	\end{center}
+
+	\section{DC Analysis}
+
+	To perform a DC analysis, we started from manual calculations and assumed followed values:
+
+
+	\begin{center}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			$U_{CEsat}\;[V]$ & $Vcc\;[V]$ & $I_d$ \\
+			\hline
+			$1$ & $12$ & $10 \times I_{B1Q}$ \\
+			\hline
+		\end{tabular}
+	\end{center}
+
+
+
+
+
+	\subsection{Calculations}
+
+	\subsection{Simulations}
+
+\end{document}
+
