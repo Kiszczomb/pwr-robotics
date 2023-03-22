@@ -21,13 +21,18 @@
 \usepackage{listings} % For source code listings (snippets)
 \usepackage{svg} % For SVG graphics
 \usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
-\usepackage{amsfonts} % provides \mathbb{text}
-\usepackage{arydshln} % for dashed line in matrix/array
+\usepackage{arydshln} % for dashed line in matrix
+\usepackage{bm} % for bold math mode, using command:  \bm{g}
 
-\usepackage{tikz}
-\usetikzlibrary{shapes.misc}
 
-\usepackage{marvosym} % for communcation suymbols \fax \FAX \Faxmachine \Telefon \Letter
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
 
 
 %\usepackage[pdftex,
@@ -64,28 +69,20 @@
 % setting the line height in gather env.
 \setlength{\jot}{3mm}
 
-% custom environment for equation conditions
-\newenvironment{conditions}
-	{\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}-{}$} l}}
-	{\end{tabular}\par\vspace{\belowdisplayskip}}
-
-% set the minipage footnotes to arabic numbers
-\renewcommand{\thempfootnote}{\alph{mpfootnote}}
-
-% =========================================================================
 
 \title{
-	Electronic Circuits \\
+	Introduction to Robotics \\
 	\vspace{\baselineskip}
 	\large
-	\textbf{Project}
+	\textbf{Lecture 3}
 }
 \author{
-	Michał Sutowicz\\
 	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
 }
-\date{Date: 20-03-2023}
+\date{Date: Tuesday 11:15, 14-03-2023}
 
+%\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
 
 
 \begin{document}
@@ -97,42 +94,70 @@
 
 	\pagebreak
 
-	\section{Introduction}
+	\section{Block Matrix of translation and rotation}
 
-	Assigned values:
+	To create single object consisting of rotational and translation matrices we can group them in so called \textit{block matrix (A)}. For easier calculations, we can make it square by filling it with constant values that does not interfere with operations performed on it (zeros and ones in our case). The final object will look something like this:
 
-	\begin{center}
-		\begin{tabular}{|c|c|c|c|c|c|}
-			\hline
-			$U_{outmax}\;[V]$ & $f_L\;[Hz]$ & $f_H\;[kHz]$ & $R_L\;[k\ohm]$ & $R_g\;[k\ohm]$ & $k_{uef}$\\
-			\hline
-			3 & 20 & 100 & 2 & 10 & 40  \\
-			\hline
-		\end{tabular}
-	\end{center}
+	\begin{minipage}{\textwidth}
+		\begin{equation}\label{key}
+			A^1_0 = \begin{bmatrix}
+				R^1_0 & d^1_0 \\
+				\bm{0}\footnote{this is actually a $3\times 1$ matrix, so it should be denoted $ [\;0\;0\;0\;]$, but for the simplification we'll just be using \textbf{0}} & \bm{1}\footnote{Similarly, in this case \textbf{1} represents a $1 \times 1$ unit matrix. }
+			\end{bmatrix}
+		\end{equation}
+	\end{minipage}
+	\\
+	\\
+	Let's check if this object obeys the \textit{chain rule}:
 
-	\section{DC Analysis}
+	\begin{equation}\label{key}
+		A^2_0 = \begin{bmatrix}
+			R^2_0 & d^2_0 \\
+			0 & 1
+		\end{bmatrix} =
+		\begin{bmatrix}
+			R^1_0 & d^1_0 \\ 0 & 1
+		\end{bmatrix}
+		\begin{bmatrix}
+			R^2_1 & d^2_1 \\ 0 & 1
+		\end{bmatrix} =
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			R^1_0 R^2_1 & R^1_0 d^2_1 + d^1_0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]
+	\end{equation}
 
-	To perform a DC analysis, we started from manual calculations and assumed followed values:
+	As we can see, the chain multiplication can be performed without issues. But what about an operation like $p_0 = A^1_0 p_1$? We cannot perform it, because sizes of vector $p$ and object $A$ are different. Let's add one missing dimension to the vector then:
 
+	\begin{equation}\label{key}
+		\begin{bmatrix}
+			p_0 \\ 1
+		\end{bmatrix} =
+		A^1_0 \cdot
+		\begin{bmatrix}
+			p_1 \\ 1
+		\end{bmatrix}
+	\end{equation}
 
-	\begin{center}
-		\begin{tabular}{|c|c|c|}
-			\hline
-			$U_{CEsat}\;[V]$ & $Vcc\;[V]$ & $I_d$ \\
-			\hline
-			$1$ & $12$ & $10 \times I_{B1Q}$ \\
-			\hline
-		\end{tabular}
-	\end{center}
+	We can shortly denote is
 
+	\section{Building blocks for SE(3) group}
 
+	\subsection{Rotational functions}
 
+	\subsection{Translation functions}
 
+	\subsection{Order of operations}
 
-	\subsection{Calculations}
+	\subsection{How to check if matrix belongs to SE(3)?}
 
-	\subsection{Simulations}
+	\section{Euler angles}
+
+	\subsection{Regular case}
+
+	\subsection{Simple case}
+
 
 \end{document}
-
