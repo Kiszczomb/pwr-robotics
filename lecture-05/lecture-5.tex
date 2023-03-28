@@ -1,0 +1,214 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{arydshln} % for dashed line in matrix
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+
+\title{
+	Introduction to Robotics \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Lecture 5}
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 11:15, 28-03-2023}
+
+\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{More complex manipulator setups}
+
+	%n-1\\
+
+	Table of D-H parameters (for frames of motion):
+
+	\begin{table}[H]
+		\centering
+		\resizebox{8cm}{!}{
+		\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				& $\theta_i$ & $d_i$ & $a_i$ & $\alpha_i$ \\
+				\hline
+				1 & $q_1$ & $d_1$ & $a_1$ & $\tfrac{\pi}{2}$ \\
+				\hline
+				2 & $q_2$ & $0$ & $0$ & $\tfrac{\pi}{2}$ \\
+				\hline
+				3 & $0$ & $q_3$ & $0$ & $0$ \\
+				\hline
+		\end{tabular}}
+	\end{table}
+
+
+	\begin{align}
+		Rot(z,\; \theta_i) \; Tran(z,\; d_i) \; Tran(x,\; \theta_i) \; Rot(x,\; \alpha_i)
+	\end{align}
+
+	%photo of matix multiplication
+
+	\begin{align}
+		A^1_0(q_1) = \left[
+		\begin{array}{c;{2pt/2pt}c}
+			\begin{matrix}
+				c_1 & -s_1 & 0 \\
+				s_1 & c_1 & 0 \\
+				0 & 0 & 1
+			\end{matrix} & 0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			I_3 & \; \begin{matrix}
+				a_1 \\ 0 \\ d_1
+			\end{matrix} \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			\begin{matrix}
+				1 & 0 & 0 \\
+				0 & 0 & -1 \\
+				0 & 1 & 0
+			\end{matrix} & 0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right] = \left[
+		\begin{array}{c;{2pt/2pt}c}
+			\begin{matrix}
+				c_1 & 0 & s_1 \\
+				s_1 & 0 & -c_1 \\
+				0 & 1 & 0
+			\end{matrix} & \begin{matrix}
+			a_1 c_1 \\
+			a_1 s_1 \\
+			d_1
+		\end{matrix} \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]\\
+		A^2_1(q_2) = \left[
+		\begin{array}{c;{2pt/2pt}c}
+			1 & 1 \\ \hdashline[2pt/2pt]
+			1 & 1
+		\end{array}
+		\right]\\
+		A^3_2(q_3) = \\
+		A^3_0(q) = A^1_0(q_1) \cdot A^2_1(q_2) \cdot A^3_2(q_3) \quad \text{ where } \quad q = \begin{bmatrix}
+			q_1 \\ q_2 \\ q_3
+		\end{bmatrix}
+	\end{align}
+	\section{Configuration space vs task space}
+
+	% photo of setup, double pendulum once again
+	% DF table
+	% A^2_0
+
+	\textbf{Configuration space} -- denoted $Q$ -- is a space that contain all configuration vectors, $q \in Q$. Its usually assumed to be rectangular or parallelepiped. But in the real live, because the joints of the "motor" volume (size) and mass or transmission of motion (gears). Configuration space can be decided after the creation of manipulator.\\ \\
+	\textbf{Task space}  (described by $X \ni x$), on the other hand will be defined by the user. Since it's a space, it has a dimensionality, usually denoted $m$ where $m \le n$ (less or equal to the dimensionality of configuration space). If $m = n$ we obtain non-redundant manipulator, if $m < n$ -- redundant, and the value $n-m$ is called degree of redundancy.
+
+	\begin{equation}\label{key}
+		A^n_0(q) = K(q) = \left[
+		\begin{array}{c;{2pt/2pt}c}
+			R^n_0(q) & d^n_0(q) \\ \hdashline[2pt/2pt]
+			O & 1
+		\end{array}
+		\right] \xrightarrow{\text{Kinematics in coordinates}}
+		\begin{bmatrix}
+			x & y & \xi \\
+		\end{bmatrix}
+  	\end{equation}
+
+	\subsection{Exercise with double pendulum}
+
+	Task space -- all the points that we can reach (x, y). \\
+
+	\begin{equation}\label{key}
+		X = K(Q)
+	\end{equation}
+	Image of configuration space via kinematics in coordinates.
+	\\
+	\textbf{\nth{1} example} -- $q_1\; q_2 \rightarrow$ unconstrained  \\
+	\textbf{\nth{2} example} -- $q_1 \rightarrow$ unconstrained and $q_2 \in [0, \tfrac{\pi}{2}]$
+
+
+
+ \end{document}
