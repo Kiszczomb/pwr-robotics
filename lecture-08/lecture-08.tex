@@ -1,0 +1,186 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{arydshln} % for dashed line in matrix
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+
+\title{
+	Introduction to Robotics \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Lecture 8}
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 11:15, 25-04-2023}
+
+\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	Until now we mainly considered manipulator, the robots we can encounter eg on factory floors. Today we'll talk about a different kind: mobile robots. As for manipulator, our goal is to find a model, mathematical description.
+
+	\section{Mobile manipulators and how to model them}
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\draw[->] (0, 0) -- (5, 0) node[right] {$x$};
+			\draw[->] (0, 0) -- (0, 5) node[above] at (1.9,3) {$f(x) \longrightarrow \text{TODO}$};
+			\draw[blue] (2,2.25) -- (2,0);
+			\draw[blue] (5,2) -- (5,0);
+			\node at (3.5,1.1) {$P(a \le x \le b)$};
+			\node at (0,-0.8) {$-\infty$};
+			\node at (2,-0.4) {$a$};
+			\node at (5,-0.4) {$b$};
+		\end{tikzpicture}
+		\caption{Model od unicycle (top view)}
+	\end{figure}
+
+
+	Let's consider the simplest mobile robot -- a unicycle. What is its confiquration (set of data required to uniquely describe the manipulator)
+
+	\begin{align}
+		q &= \begin{bmatrix}
+			x \\
+			y \\
+			\theta
+		\end{bmatrix}
+	\end{align}
+
+	With assumption that there is no lateral slippage:
+
+	\begin{align}
+		\dfrac{\partial y}{\partial x} &= \tan \theta = \dfrac{\sin \theta}{\cos \theta} \\
+		\sin \theta \cdot \partial x - \cos \theta \cdot \partial y &= 0 \; \left/ \cdot \dfrac{\partial}{\partial t} \right. \\
+		\sin \theta \cdot \dot{x} - \cos \theta \cdot \dot{y} &= 0 \\
+		\begin{bmatrix}
+			\sin \theta & -\cos \theta & 0
+		\end{bmatrix}
+		\begin{bmatrix}
+			\dot{x} \\
+			\dot{y} \\
+			\dot{\theta}
+		\end{bmatrix} &= \begin{bmatrix}
+		0
+	\end{bmatrix}
+	\end{align}
+
+	In robotics those constrians are called constraints in \textbf{Pfaff form}:
+
+	\begin{align}
+		A(q)\dot{q} &= 0 \\
+		rank \; A(q) &= r
+	\end{align}
+
+	no longitudinal slippage, odometry, motion of point\\
+	no lateral slppage and no longitudinal slippage coupled together \\
+	constriants (2) x
+	\begin{align}
+		\begin{bmatrix}
+			\sin \theta & -\cos \theta & 0 & 0 \\
+			\cos \theta & \sin \theta & 0 & -R
+		\end{bmatrix}
+		\begin{bmatrix}
+			\dot{x} \\
+			\dot{y} \\
+			\dot{\theta} \\
+			\dot{\phi}
+		\end{bmatrix}
+	\end{align}
+
+	Lets complicate the system:
+
+	\section{Configuration vs controllability}
+
+	n = 3 <- dimension of configuration space\\
+	r = 1 <- number of constrians \\
+	m = n - r = 2 <- difference (controls?)
+
+	\subsection{Vector field vs vectors}
+
+	Lets find a perpendicular vector field
+	\begin{align}
+		a_1 \sin \theta - a_2 \cos \theta + a_3 \cdot 0= 0 \;\forall\; q
+	\end{align}
+
+	\subsection{How to determine if system is controllable?}
+
+
+
+\end{document}

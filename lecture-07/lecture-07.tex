@@ -1,0 +1,224 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{arydshln} % for dashed line in matrix
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+
+\title{
+	Introduction to Robotics \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Lecture 7}
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 11:15, 18-04-2023}
+
+\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{Rewind –– Inverse kinematics}
+
+	Inverse kinematics -- we have given position and orientation and we have to find the configuration that realizes this problem. One of the methods, jacobi based, for solving that kind of task.\\
+
+	Given: $x = k(1), x_f \in X$
+
+	\begin{align}\label{key}
+		q_{i+1} &= q_i + \xi_i J^\#(q_i)(x_f - k(q_i))\\
+		J^\# &= J^T (JJ^T)^{-1}
+	\end{align}
+
+	This is an iterative algorithm, so $q_0 \rightarrow q_1 \rightarrow q$. That kind of thask comes in two flavours:
+	\begin{itemize}
+		\item regular configuration: $rank\; J(q) = m$
+		\item singular configuration: $rank\; J(q) < m$
+	\end{itemize}
+
+	\subsection{Singular case}
+
+	How to determine singular configuratoin:
+
+	\begin{enumerate}
+		\item $rank\; J(q)$\\
+		\textit{J as $m \times n$ rectangle}
+		select all $m \times m$ -- sub-matrices of J (there are $\binom{n}{k} = \dfrac{n!}{m! (n-m)!}$)
+		singular cont: if all determinants of all submatrices are equal to 0
+		\item $det\left(J(q) J^T(q)\right)$\\
+		Example calculation \textit{(3 DOF planar pendulum)}
+		\begin{multicols}{2}
+				\begin{align}
+				\begin{bmatrix}
+					x\\
+					y
+				\end{bmatrix} =
+				\begin{bmatrix}
+					k_1(q)\\
+					k_2(q)
+				\end{bmatrix} =
+				\begin{bmatrix}
+					a_1 c_1 + a_2 c_{12} + a_3 c_{123} \\
+					a_1 s_1 + a_2 s_{12} + a_3 s_{123}
+				\end{bmatrix}
+			\end{align}
+			\\
+			\begin{align}
+				q &=
+				\begin{bmatrix}
+					q_1 \\ q_2 \\ q_3
+				\end{bmatrix} \\
+				J &= \dfrac{\partial k}{\partial q} \\
+				m &= dim\; X \\
+				n &= dim\; Q
+			\end{align}
+		\end{multicols}
+		\begin{align}
+			det\;J_{23} &= a_1 a_2 s_3 = 0\\
+			det\;J_{12} &= a_1 a_2 s_@ + a_1 a_3 s_{23} = 0\\
+			det\;J_{13} &= a_1 a_3 s_{23} + a_2 a_3 s_3 = 0
+		\end{align}
+		therefore:
+		\begin{align}
+			s_3 &= 0 \rightarrow q_3 = \left\{0, \pi\right\} \\
+			s_{23} &= 0 \rightarrow q_2 = \left\{0, \pi\right\} \\
+			q &= \begin{bmatrix}
+				* \\
+				\left\{0, \pi\right\} \\
+				\left\{0, \pi\right\}
+			\end{bmatrix}
+		\end{align}
+		At regular configuration we can move in every direction infinitesimally (like arm in L shape). in singular it is not possible	(like straight extended arm).\\
+
+
+	\end{enumerate}
+
+	\section{Other methods}
+	\subsection{Geometrical method}
+
+	Works only or special kind of robots, lets excercise with planar double pendulum:\\
+
+	\textit{photo}\\
+	\begin{align}
+		\begin{bmatrix}
+			x \\ y
+		\end{bmatrix} =
+		\begin{bmatrix}
+			a_1 c_1 + a_2 c_{12} \\ a_1 s_1 + a_2 S_{12}
+		\end{bmatrix}
+	\end{align}
+	Having given $x_f$ and $y_f$ we can easily obtain $r = \sqrt{x_f^2 + y_f^2}$. Using cosinus theorem:
+	\begin{align}
+		r^2 &= a_1^2 + a_2^2 - 2 a_1 a_2 \cos \beta \rightarrow \beta \\
+		a_2^2 &= a_1^2 + r^2 - 2 a_1 r \cos \alpha \rightarrow \alpha
+	\end{align}
+	therefore
+	\begin{align}
+		q_2 &= \beta - \pi \\
+		q_1 &= \gamma + \alpha \\
+		\tan \gamma &= \dfrac{x_f}{y_f} \rightarrow \gamma
+	\end{align}
+	There is also another solution, mirrored, called elbow-up or elbow-down.
+	For singular case (extended arm)
+
+	\subsection{Kinematics decoupling}
+	Applicable only when three last axes cross at a single point.
+	Let's have a manipulator with $n = 6$
+	\begin{align}
+		K(q) &=
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			R_0^6(q)  & d_0^6(q) \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]\\
+		r(q_1, q_2, q_3) &= d_0^6 - d_6 R_0^6 e_3 \\
+		e_3 = \begin{bmatrix}
+			0 \\ 0 \\ 1
+		\end{bmatrix}
+	\end{align}
+	We used to calculate in forward kinematics this general approach:
+	\begin{align}
+		A_0^n(q) = \dots
+	\end{align}
+	Now we have case that:
+	\begin{align}
+		R_0^6 = R_0^3(q_1, q_2, q_3) R_0^6(q_4, q_5, q_6)
+	\end{align}
+	So at the end we decoupled this 6-dimensional problem in two 3-dimensional problems. This is always a good idea, because of the complexity
+\end{document}

@@ -1,0 +1,176 @@
+\documentclass[12pt, a4paper]{extarticle}
+\usepackage[a4paper, margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc} % For polish characters in author name
+\usepackage[utf8]{inputenc} % For global UTF-8 encoding
+\usepackage{booktabs} % For "\specialrule" command
+\usepackage{graphicx} % For graphics
+\graphicspath{ {./images/} }
+\usepackage{subfig} % For subfigures (images side by side)
+\usepackage{amsmath} % For math
+\usepackage{icomma} % For "intelligent" comma
+\usepackage{multirow} % For generated table
+\usepackage{float} % For table positioning
+\usepackage{gensymb} % For degree symbol
+%\usepackage{hyperref} % For hypertext links
+\usepackage[bottom]{footmisc} % For footnotes on bottom of page
+\usepackage[table,xcdraw]{xcolor} % For colored tables
+\usepackage{multicol} % For multicolum lists
+\usepackage[pdfusetitle]{hyperref} % For automatic PDF metadata
+\usepackage[makeroom]{cancel} % For rossing out / canceling in math
+\usepackage{pdflscape} % For landscape PDF
+\usepackage{listings} % For source code listings (snippets)
+\usepackage{svg} % For SVG graphics
+\usepackage[super]{nth} % for "1st", "2nd" and "i-th" numbering: \nth{2}
+\usepackage{arydshln} % for dashed line in matrix
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+
+\usepackage{xcolor}
+\hypersetup{
+	colorlinks,
+	linkcolor={green!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+
+
+%\usepackage[pdftex,
+%pdfauthor={Kacper Jastrzębski, 260607@student.pwr.edu.pl},
+%pdftitle={The Title},
+%pdfsubject={The Subject},
+%pdfkeywords={Some Keywords},
+%pdfproducer={Latex with hyperref, or other system},
+%pdfcreator={pdflatex, or other tool}]{hyperref} % For manual PDF metadata
+
+\usepackage{letltxmacro} % For new style roots with "closing"
+\makeatletter
+\let\oldr@@t\r@@t
+\def\r@@t#1#2{%
+	\setbox0=\hbox{$\oldr@@t#1{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}%
+	{\box0\lower0.4pt\box2}}
+\LetLtxMacro{\oldsqrt}{\sqrt}
+\renewcommand*{\sqrt}[2][\ ]{\oldsqrt[#1]{#2} }
+\makeatother
+
+\renewcommand{\baselinestretch}{1.0}
+%\renewcommand{\familydefault}{\sfdefault}
+%\setlength{\parindent}{4em}
+\setlength{\parskip}{0em}
+
+\setlength{\arrayrulewidth}{0.2mm}
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\newcommand{\experiment}{E105}
+
+% setting the line height in gather env.
+\setlength{\jot}{3mm}
+
+
+\title{
+	Introduction to Robotics \\
+	\vspace{\baselineskip}
+	\large
+	\textbf{Lecture 6}
+}
+\author{
+	Kacper Jastrzębski\\
+	260607@student.pwr.edu.pl
+}
+\date{Date: Tuesday 11:15, 04-04-2023}
+
+\urldef\urlwiki\url{https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters}
+
+
+\begin{document}
+
+	\maketitle
+	\vspace{1.5cm}
+
+	\tableofcontents
+
+	\pagebreak
+
+	\section{Forward kinematics}
+	\textit{From Wikipedia:} Forward kinematics refers to the use of the kinematic equations of a robot to compute the position of the end-effector from specified values for the joint parameters (configuration vectors)\\
+
+	\begin{minipage}{\textwidth}
+		\begin{equation}\label{key}
+			Q\footnote{Configuration space} \ni q \rightarrow x\footnote{Position an orientation of end-effector} = k(q) \quad \text{where} \quad x \in X\footnote{Task space}
+		\end{equation}
+	\end{minipage}
+
+	\section{Different coordinates systems}
+
+	\subsection{Cartesian}
+	Unique -- point $\begin{bmatrix}
+		0 & 0 & 0
+	\end{bmatrix}$ describes one point exactly.
+
+	\subsection{Cylindrical}
+	Non-unique -- the same point can be described by $r=0$ and any angle $\gamma \in [0, 2\pi]$.
+	Sensitivity to error -- for
+
+	\subsection{Spherical}
+
+	\section{Inverse kinematics}
+	Having given point (generalized position) find the configuration that realizes it.\\
+	Given the task space and forward kinematics find such configuration(s) that solve the equation.\\
+	Given: $x_p \in X, k=k(q)$ find: $q^*: \; x_f=k(q^*) $.
+
+	\begin{minipage}{\textwidth}
+		\begin{align}
+			x^{(t)} &= k(q^{(t)}) \quad \left/ \dfrac{\partial}{\partial t} \right. \\
+			\dot{x} &= \dfrac{\partial k(q)}{\partial q} \cdot \dot{q} = J(q) \dot{q}
+		\end{align}
+	\end{minipage}
+
+	\subsection{Double pendulum}
+	Photo
+
+	\subsection{Custom example}
+	Photo\\
+
+	Function approximation using Taylor series\\
+
+	How to get $q_{i+1}$ from the complicated equation:\\
+
+	\begin{align}
+		\xi \left(x_f - k(q_i)\right) &= J(q_i)\left(q_{i+1} - q_i\right) \\
+		q_{i+1} &= q_i + \xi J^{-1}(q_i)(x_f - k(q_i))
+	\end{align}
+
+	Newton algorithm of inverse kinematics for non-redundant manipulator.\\
+
+	Only for inversible Jacobi matrix (aka. entering the singular configuration)\\
+
+	\textbf{Stop condition} -- when the difference between $q_i$ and $q_f$ is small enough.\\
+
+	regular configuration $q$: $rank J(q) = m$ (full rank)\\
+
+	singular configuration $q$: $rank J(q) < m$\\
+
+	Checking the rank: 2x3 -> at least one determinant of square submatrix must be non-zero\\
+
+	What about redundant manipulators, with non-square matrices: \\
+
+	pseudo-inverse of Jacobi matrix: (still not working for singular configuration)
+	\begin{equation}\label{key}
+		J^\# = J^T(J J^T)^{-1}
+	\end{equation}
+	Manipulabity matrix
+	\begin{equation}\label{key}
+		J_{(q)} J^T_{(q)} = M(q)
+	\end{equation}
+
+	3rd method -- robust (against singularity) inverse:
+	\begin{equation}\label{key}
+		J^\# = J^T(J J^T + \lambda I_m)
+	\end{equation}
+
+	When to switch to robust? When the determinant of manipulabity matrix is below given threshold
+
+\end{document}
