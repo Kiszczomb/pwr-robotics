@@ -124,7 +124,7 @@
 	%photo of matix multiplication
 
 	\begin{align}
-		A^1_0(q_1) = \left[
+		A^1_0(q_1) &= \left[
 		\begin{array}{c;{2pt/2pt}c}
 			\begin{matrix}
 				c_1 & -s_1 & 0 \\
@@ -165,14 +165,46 @@
 			0 & 1
 		\end{array}
 		\right]\\
-		A^2_1(q_2) = \left[
+		A^2_1(q_2) &= \left[
 		\begin{array}{c;{2pt/2pt}c}
-			1 & 1 \\ \hdashline[2pt/2pt]
-			1 & 1
+			\begin{matrix}
+				-c_2 & s_2 & 0 \\
+				-s_2 & -c_2 & 0 \\
+				0 & 0 & 1
+			\end{matrix} & 0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			\begin{matrix}
+				1 & 0 & 0 \\
+				0 & 0 & -1 \\
+				0 & 1 & 0
+			\end{matrix} & 0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right] =
+		\left[
+		\begin{array}{c;{2pt/2pt}c}
+			\begin{matrix}
+				-c_2 & 0 & -s_2 \\
+				-s_2 & 0 & c_2 \\
+				0 & 1 & 0
+			\end{matrix} & 0 \\ \hdashline[2pt/2pt]
+			0 & 1
+		\end{array}
+		\right]
+		\\
+		A^3_2(q_3) &= \left[
+		\begin{array}{c;{2pt/2pt}c}
+			I_3 & \; \begin{matrix}
+				0 \\ 0 \\ q_3+d_3
+			\end{matrix} \\ \hdashline[2pt/2pt]
+			0 & 1
 		\end{array}
 		\right]\\
-		A^3_2(q_3) = \\
-		A^3_0(q) = A^1_0(q_1) \cdot A^2_1(q_2) \cdot A^3_2(q_3) \quad \text{ where } \quad q = \begin{bmatrix}
+		A^3_0(q) &= A^1_0(q_1) \cdot A^2_1(q_2) \cdot A^3_2(q_3) \quad \text{ where } \quad q = \begin{bmatrix}
 			q_1 \\ q_2 \\ q_3
 		\end{bmatrix}
 	\end{align}
@@ -182,8 +214,16 @@
 	% DF table
 	% A^2_0
 
-	\textbf{Configuration space} -- denoted $Q$ -- is a space that contain all configuration vectors, $q \in Q$. Its usually assumed to be rectangular or parallelepiped. But in the real live, because the joints of the "motor" volume (size) and mass or transmission of motion (gears). Configuration space can be decided after the creation of manipulator.\\ \\
-	\textbf{Task space}  (described by $X \ni x$), on the other hand will be defined by the user. Since it's a space, it has a dimensionality, usually denoted $m$ where $m \le n$ (less or equal to the dimensionality of configuration space). If $m = n$ we obtain non-redundant manipulator, if $m < n$ -- redundant, and the value $n-m$ is called degree of redundancy.
+	\textbf{Configuration space} -- denoted $Q$ -- is a space that contain all configuration vectors, $q \in Q$. Its usually assumed to be rectangular or parallelepiped. But in the real live it may resemble different figures, because of the sizes of joints, of the volume taken by the motors and of the mass of  transmission elements (e.g. gears). Configuration space can be decided after the creation of manipulator.\\ \\
+	\textbf{Task space}  (described by $X \ni x$), on the other hand, is defined by the user. Since it's a space, it has a dimensionality, usually denoted $m$ where $m \le n$ (less or equal to the dimensionality of configuration space). By the relation between $m$ and $n$ we can distinguish two possibilities:
+	\begin{itemize}
+		\setlength\itemsep{-0.3em}
+		\item $m = n$ -- non-redundant manipulator,
+		\item $m < n$ -- redundant manipulator,
+	\end{itemize}
+
+	And the value $n-m$ is called the \textbf{degree of redundancy}.
+
 
 	\begin{equation}\label{key}
 		A^n_0(q) = K(q) = \left[
@@ -199,13 +239,16 @@
 
 	\subsection{Exercise with double pendulum}
 
-	Task space -- all the points that we can reach (x, y). \\
+	Task space -- all the points that we can reach, provided in coordinates (x, y). \\
+	\begin{figure}
+		\begin{equation}
+			X = K(Q)
+		\end{equation}
+		\captionsetup{labelformat=empty}
+		\caption{Image of configuration space via kinematics in coordinates.}
+	\end{figure}
+	Two dimensional planar double pendulum.
 
-	\begin{equation}\label{key}
-		X = K(Q)
-	\end{equation}
-	Image of configuration space via kinematics in coordinates.
-	\\
 	\textbf{\nth{1} example} -- $q_1\; q_2 \rightarrow$ unconstrained  \\
 	\textbf{\nth{2} example} -- $q_1 \rightarrow$ unconstrained and $q_2 \in [0, \tfrac{\pi}{2}]$
 
